@@ -1,0 +1,87 @@
+# ---------------------------------------------------
+# BILL GENERATOR APPLICATION
+# ---------------------------------------------------
+
+def get_products():
+    """Collect product details from the user."""
+    products = []
+    print("=" * 55)
+    print("           WELCOME TO SMART BILL GENERATOR")
+    print("=" * 55)
+
+    while True:
+        name = input("\nEnter product name: ").strip()
+        try:
+            quantity = int(input("Enter quantity: "))
+            price = float(input("Enter price per unit (Rs.): "))
+            if quantity <= 0 or price <= 0:
+                print("Quantity and price must be positive numbers. Try again.")
+                continue
+        except ValueError:
+            print("Invalid input! Please enter numeric values for quantity and price.")
+            continue
+
+        amount = quantity * price
+        products.append({
+            "name": name,
+            "quantity": quantity,
+            "price": price,
+            "amount": amount
+        })
+
+        more = input("Add another product? (y/n): ").strip().lower()
+        if more != 'y':
+            break
+
+    return products
+
+
+def calculate_totals(products, gst_rate):
+    """Calculate subtotal, GST amount, and grand total."""
+    subtotal = sum(item["amount"] for item in products)
+    gst_amount = (subtotal * gst_rate) / 100
+    grand_total = subtotal + gst_amount
+    return subtotal, gst_amount, grand_total
+
+
+def generate_bill(products, gst_rate):
+    """Display the formatted bill."""
+    subtotal, gst_amount, grand_total = calculate_totals(products, gst_rate)
+
+    print("\n" + "=" * 55)
+    print("                    CUSTOMER BILL")
+    print("=" * 55)
+    print(f"{'Product':<15}{'Qty':<8}{'Price':<12}{'Amount':<10}")
+    print("-" * 55)
+
+    for item in products:
+        print(f"{item['name']:<15}{item['quantity']:<8}"
+              f"Rs.{item['price']:<9.2f}Rs.{item['amount']:<8.2f}")
+
+    print("-" * 55)
+    print(f"{'Subtotal:':<35}Rs.{subtotal:.2f}")
+    print(f"{'GST (' + str(gst_rate) + '%):':<35}Rs.{gst_amount:.2f}")
+    print("-" * 55)
+    print(f"{'GRAND TOTAL:':<35}Rs.{grand_total:.2f}")
+    print("=" * 55)
+    print("            THANK YOU FOR SHOPPING WITH US!")
+    print("=" * 55)
+
+
+def main():
+    products = get_products()
+
+    apply_gst = input("\nApply GST? (y/n): ").strip().lower()
+    gst_rate = 0
+    if apply_gst == 'y':
+        try:
+            gst_rate = float(input("Enter GST rate (%): "))
+        except ValueError:
+            print("Invalid GST rate entered. Setting GST to 0%.")
+            gst_rate = 0
+
+    generate_bill(products, gst_rate)
+
+
+if __name__ == "__main__":
+    main()
