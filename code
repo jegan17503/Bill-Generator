@@ -2,12 +2,36 @@
 # BILL GENERATOR APPLICATION
 # ---------------------------------------------------
 
-def get_products():
-    """Collect product details from the user."""
-    products = []
+from datetime import datetime
+import random
+
+
+def get_customer_details():
+    """Collect customer name and generate bill number & date/time."""
     print("=" * 55)
     print("           WELCOME TO SMART BILL GENERATOR")
     print("=" * 55)
+
+    name = input("\nEnter customer name: ").strip()
+    while not name:
+        print("Customer name cannot be empty.")
+        name = input("Enter customer name: ").strip()
+
+    bill_no = random.randint(1000, 9999)
+    bill_date = datetime.now().strftime("%d-%m-%Y")
+    bill_time = datetime.now().strftime("%I:%M %p")
+
+    return {
+        "name": name,
+        "bill_no": bill_no,
+        "date": bill_date,
+        "time": bill_time,
+    }
+
+
+def get_products():
+    """Collect product details from the user."""
+    products = []
 
     while True:
         name = input("\nEnter product name: ").strip()
@@ -44,12 +68,17 @@ def calculate_totals(products, gst_rate):
     return subtotal, gst_amount, grand_total
 
 
-def generate_bill(products, gst_rate):
+def generate_bill(customer, products, gst_rate):
     """Display the formatted bill."""
     subtotal, gst_amount, grand_total = calculate_totals(products, gst_rate)
 
     print("\n" + "=" * 55)
     print("                    CUSTOMER BILL")
+    print("=" * 55)
+    print(f"Bill No.   : {customer['bill_no']}")
+    print(f"Customer   : {customer['name']}")
+    print(f"Date       : {customer['date']}")
+    print(f"Time       : {customer['time']}")
     print("=" * 55)
     print(f"{'Product':<15}{'Qty':<8}{'Price':<12}{'Amount':<10}")
     print("-" * 55)
@@ -69,6 +98,7 @@ def generate_bill(products, gst_rate):
 
 
 def main():
+    customer = get_customer_details()
     products = get_products()
 
     apply_gst = input("\nApply GST? (y/n): ").strip().lower()
@@ -80,7 +110,7 @@ def main():
             print("Invalid GST rate entered. Setting GST to 0%.")
             gst_rate = 0
 
-    generate_bill(products, gst_rate)
+    generate_bill(customer, products, gst_rate)
 
 
 if __name__ == "__main__":
